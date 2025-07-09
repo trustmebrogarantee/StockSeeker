@@ -29,6 +29,88 @@ function generateRoundedYAxisTicks(min, max, options = {}) {
   return ticks;
 }
 
+function calculateAngle(x1, y1, x2, y2) {
+  // Вычисляем разницу координат
+  const deltaX = x2 - x1;
+  const deltaY = y2 - y1;
+
+  // Вычисляем угол в радианах с помощью Math.atan2
+  let angleRad = Math.atan2(deltaY, deltaX);
+
+  // Преобразуем в градусы (0 до 360)
+  let angleDeg = angleRad * (180 / Math.PI);
+
+  // Нормализуем угол, чтобы он был в диапазоне [0, 360)
+  // if (angleDeg < 0) {
+  //   angleDeg += 360;
+  // }
+
+  return angleDeg - 180;
+}
+
+function zigzag(ohlc, threshold) {
+  if (!ohlc || ohlc.length === 0) return [];
+
+  const significantPoints = [];
+  let direction = null; // Initially null until first significant move
+  let lastPrice = ohlc[0].l; // Start with first low
+  let maxHigh = ohlc[0].h;
+  let maxHighIndex = 0;
+  let minLow = ohlc[0].l;
+  let minLowIndex = 0;
+
+  // Add the first point as a low
+  significantPoints.push({ index: 0, price: ohlc[0].l, type: 'low' });
+
+  for (let i = 1; i < ohlc.length; i++) {
+    // Update running max high and min low
+    if (ohlc[i].h > maxHigh) {
+      maxHigh = ohlc[i].h;
+      maxHighIndex = i;
+    }
+    if (ohlc[i].l < minLow) {
+      minLow = ohlc[i].l;
+      minLowIndex = i;
+    }
+
+    // Determine initial direction if not set
+    if (direction === null) {
+      if (maxHigh > lastPrice * (1 + threshold)) {
+        direction = 'up';
+      } else if (minLow < lastPrice * (1 - threshold)) {
+        direction = 'down';
+      }
+      continue;
+    }
+
+    if (direction === 'up') {
+      // Check for a significant drop from the max high
+      if (ohlc[i].l < maxHigh * (1 - threshold)) {
+        significantPoints.push({ index: maxHighIndex, price: maxHigh, type: 'high' });
+        lastPrice = maxHigh;
+        direction = 'down';
+        minLow = ohlc[i].l;
+        minLowIndex = i;
+        maxHigh = ohlc[i].h; // Reset maxHigh for the next uptrend
+        maxHighIndex = i;
+      }
+    } else { // direction === 'down'
+      // Check for a significant rise from the min low
+      if (ohlc[i].h > minLow * (1 + threshold)) {
+        significantPoints.push({ index: minLowIndex, price: minLow, type: 'low' });
+        lastPrice = minLow;
+        direction = 'up';
+        maxHigh = ohlc[i].h;
+        maxHighIndex = i;
+        minLow = ohlc[i].l; // Reset minLow for the next downtrend
+        minLowIndex = i;
+      }
+    }
+  }
+
+  return significantPoints;
+}
+
 export class Chart {
   constructor(viewType = 'ohlc', delimiter = 'hour:1', candlesInViewport = 5) {
     this.el = document.createElement('canvas')
@@ -62,6 +144,7 @@ export class Chart {
     this.renderedStdDev = []
     this.renderedHighs = []
     this.renderedLows = []
+    this.significantPoints = []
 
     this.delayedRenderCalls = []
 
@@ -254,6 +337,9 @@ export class Chart {
         this.renderedLows.push(low)
       }
     }
+
+    this.significantPoints = zigzag(renderedData, 0.03)
+    
     // this.highs = this.highs.sort((a, b) => b.delta - a.delta).filter((p, i, a) => i < Math.floor(a.length * 0.1))
     // this.lows = this.lows.sort((a, b) => b.delta - a.delta).filter((p, i, a) => i < Math.floor(a.length * 0.1))
   }
@@ -541,6 +627,15 @@ export class Chart {
       for (let i = 0; i < renderedData.length; i++) {
         const data = renderedData[i]
         drawOHLCCandle(ctx, { x: indexToX(i), openY: priceToY(data.o), closeY: priceToY(data.c), highY: priceToY(data.h), lowY: priceToY(data.l), isRising: data.c >= data.o }, { upColor, downColor, candleWidth, wickColor, clusters: [], clusterFiltration: 20000, evaluations: this.evaluations, extra: data.extra })
+        if (i === renderedData.length - 1 && this.significantPoints.length > 0) {
+          const lastSp = this.significantPoints.at(-1)
+          const spItem = renderedData[lastSp.index]
+          if (spItem) {
+            const candleAngle = calculateAngle(i, data.c, lastSp.index, spItem.c)
+          }
+          // const spAngle = calculateAngle(i, spItem.c, i, spItem.extra.cvd)
+          // console.log({ candleAngle })
+        }
         
         if (data.extra.id === this.trainHighlights.at(-1)?.extra.id) {
           ctx.fillStyle = '#4e9bd94a'
@@ -633,6 +728,19 @@ export class Chart {
           // drawPriceLevel(ctx, { x1: timeToX(level.timeStart), x2: timeToX(level.timeEnd), y1: priceToY(level.price - epsilon), y2: priceToY(level.price + epsilon), testsCount: level.testsCount })
         }
       }
+
+      ctx.beginPath()
+      for (let i = 0; i < this.significantPoints.length; i++) {
+        const point = this.significantPoints[i]
+        const x = indexToX(point.index)
+        const y = priceToY(point.price)
+        if (i === 0) ctx.moveTo(x, y)
+        else ctx.lineTo(x, y)
+      }
+      ctx.lineWidth = 2
+      ctx.strokeStyle = 'blue'
+      ctx.stroke()
+      ctx.closePath()
 
       for (const subchart of this.subcharts) {
         this.renderSubchart(subchart, renderedData)

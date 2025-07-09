@@ -41,7 +41,7 @@ const MARKET = {
 const runOptions = {
   runningMode: MODE.analysis,
   market: MARKET.spot,
-  symbol: 'DOTUSDT',
+  symbol: 'AVAXUSDT',
   dataSource: DATA_SOURCES.binance,
   accountSouce: DATA_SOURCES.binanceTestnet,
   ticksLimit: 1000,
@@ -81,6 +81,12 @@ const tradingAssets = [
     delimiter: 'volume:45000',
     deltaDiverdenceAt: 0.85,
     fromDate: parse('01.09.2022 00:00:00Z', 'dd.MM.yyyy HH:mm:ssX', new Date())
+  },
+  {
+    symbol: 'BTCUSDT',
+    delimiter: 'rangexv:100000',
+    deltaDiverdenceAt: 0.85,
+    fromDate: parse('01.06.2025 00:00:00Z', 'dd.MM.yyyy HH:mm:ssX', new Date())
   }
 ]
 

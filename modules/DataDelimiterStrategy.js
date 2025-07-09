@@ -1,48 +1,20 @@
 import EventEmitter from "eventemitter3"
 
-  function roundQuantityTo(number, step) {
-    return Number((Math.floor(number / step) * step).toFixed(2))
-  }
+function roundQuantityTo(number, step) {
+  return Number((Math.floor(number / step) * step).toFixed(2))
+}
 
- /**
-   * Calculates the anomaly score for the current volume using the Fixed Historical Window method.
-   * @param {number} currentVolume - The volume at the current period (V_{p,T+1}).
-   * @param {number[]} historicalVolumes - Array of historical volumes in chronological order [V_{p,1}, V_{p,2}, ..., V_{p,T}].
-   * @param {number} N - Number of historical periods to consider (must be >= 2).
-   * @returns {number} - The anomaly score, or 0 if the standard deviation is zero.
-   * @throws {Error} - If N < 2 or insufficient historical data is provided.
-   */
-  function calculateFixedWindowScoreFunction(historicalVolumes, N) {
-    // Validate N
-    if (N < 2) {
-        return (value) => 0
-    }
-    // Check if there’s enough historical data
-    if (historicalVolumes.length < N) {
-        throw new Error("Insufficient historical data");
-    }
-
-    // Take the last N periods from historicalVolumes
-    const window = historicalVolumes.slice(-N);
-
-    // Calculate mean: μ = (1/N) * Σ V_t
-    const sum = window.reduce((a, b) => a + b, 0);
-    const mean = sum / N;
-
-    // Calculate variance: σ² = (1/(N-1)) * Σ (V_t - μ)²
-    const sumSquares = window.reduce((a, b) => a + (b - mean) ** 2, 0);
-    const variance = sumSquares / (N - 1);
-
-    // Calculate standard deviation
-    const stdDev = Math.sqrt(variance);
-
-    // Avoid division by zero; return 0 if standard deviation is zero
-    if (stdDev === 0) {
-        return (value) => 0;
-    }
-
-    // Calculate anomaly score: (V_{p,T+1} - μ) / σ
-    return value => (value - mean) / stdDev;
+function calculateFixedWindowScoreFunction(historicalVolumes, N) {
+  if (N < 2) return (value) => 0
+  if (historicalVolumes.length < N) throw new Error("Insufficient historical data");
+  const window = historicalVolumes.slice(-N);
+  const sum = window.reduce((a, b) => a + b, 0);
+  const mean = sum / N;
+  const sumSquares = window.reduce((a, b) => a + (b - mean) ** 2, 0);
+  const variance = sumSquares / (N - 1);
+  const stdDev = Math.sqrt(variance);
+  if (stdDev === 0) return (value) => 0;
+  return value => (value - mean) / stdDev;
 }
 
 export class DataDelimiter extends EventEmitter {
