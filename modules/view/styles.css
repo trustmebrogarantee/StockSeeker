@@ -1,0 +1,136 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+canvas {
+  cursor: crosshair;
+  box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.39);
+}
+
+#controlPanel {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+}
+
+select {
+  padding: 8px 16px;
+  font-size: 16px;
+}
+
+#trainAbExPaterns {
+  position: fixed;
+  display: grid;
+  top: 8px;
+  right: 68px;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 600px;
+  visibility: hidden;
+}
+
+button {
+  height: 40px;
+  font-size: 16px;
+}
+
+.skip {
+  justify-self: end;
+}
+
+.manage {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.manage>* {
+  flex-shrink: 0;
+  flex-grow: 1;
+}
+
+.drop-area {
+  position: fixed;
+  inset: 0;
+  border: 3px dashed #ccc;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.drop-area.dragover {
+  border-color: #2ecc71;
+  background-color: rgba(232, 245, 233, 0.9);
+  transform: scale(1.02);
+}
+
+.drop-area.visible {
+  display: flex;
+}
+
+.container {
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#file-info {
+  margin-top: 10px;
+  color: #333;
+}
+
+.loading-bar-container {
+  width: 200px;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px auto;
+  display: none;
+}
+
+.loading-bar {
+  width: 0;
+  height: 100%;
+  background-color: #2ecc71;
+  animation: loading 5s linear forwards;
+  animation-delay: 1000ms;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0); /* or translate3d(0, 0, 0) */
+  backface-visibility: hidden; /* Optional: prevents flickering in some cases */
+  perspective: 1000px; /* Optional: ensures 3D rendering context */
+}
+
+@keyframes loading {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+.loading-bar-container.visible {
+  display: block;
+}

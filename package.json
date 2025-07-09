@@ -1,0 +1,35 @@
+{
+  "name": "stock-seeker",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "serve:python": "set PYTHONIOENCODING=utf-8 && python ./modules/ml/classifier.py",
+    "serve:node": "node --env-file=.env --max-old-space-size=8192 index.js",
+    "serve:client": "vite --host",
+    "preview:client": "vite preview --host",
+    "serve": "concurrently --kill-others \"npm run serve:python\" \"npm run serve:node\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "big-json": "^3.2.0",
+    "binance": "^3.0.0",
+    "canvas": "^3.1.0",
+    "chalk": "^5.4.1",
+    "csv-reader": "^1.0.12",
+    "date-fns": "^4.1.0",
+    "eventemitter3": "^5.0.1",
+    "lodash": "^4.17.21",
+    "nan": "^2.22.2",
+    "node-gyp": "^11.2.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "vite": "^6.3.5"
+  }
+}

@@ -1,0 +1,12 @@
+node_modules
+cache/historical_trades/*
+cache/candles/*
+cache/charts/*
+!cache/historical_trades/.gitkeep
+!cache/candles/.gitkeep
+!cache/charts/.gitkeep
+.env
+modules/ml/model_data.pkl
+modules/ml/model_data.json
+modules/ml/deals.csv
+modules/ml/deals.json
