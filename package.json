@@ -8,7 +8,8 @@
     "serve:node": "node --env-file=.env --max-old-space-size=8192 index.js",
     "serve:client": "vite --host",
     "preview:client": "vite preview --host",
-    "serve": "concurrently --kill-others \"npm run serve:python\" \"npm run serve:node\""
+    "serve": "concurrently --kill-others \"npm run serve:python\" \"npm run serve:node\"",
+    "build": "vite build"
   },
   "keywords": [],
   "author": "",

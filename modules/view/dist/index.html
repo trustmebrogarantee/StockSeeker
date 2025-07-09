@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualization</title>
+    <script type="module" crossorigin src="/StockSeeker/assets/main-CIUnGVoT.js"></script>
+    <link rel="stylesheet" crossorigin href="/StockSeeker/assets/main-EF54Am6F.css">
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div class="container">
+      <div class="drop-area" id="drop-area">
+        <div>
+          <p>Drop File Here</p>
+          <div id="file-info"></div>
+          <div class="loading-bar-container" id="loading-bar">
+            <div class="loading-bar gpu-accelerated"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="controlPanel">
+      <select id="modeChangeSelect">
+        <option selected value="inspect">Inspect chart</option>
+        <option value="train-ab-ex-patterns">
+          Train Absorption\Exhaustion patterns
+        </option>
+      </select>
+
+      <div id="trainAbExPaterns">
+        <button value="bearish-exhaustion">
+          Перехай по цене, недохай по CVD
+        </button>
+        <button value="bearish-absorption">
+          Недохай по цене, перехай по CVD
+        </button>
+
+        <button value="bullish-exhaustion">
+          Перелоу по цене, недолоу по CVD
+        </button>
+        <button value="bullish-absorption">
+          Недолоу по цене, перелоу по CVD
+        </button>
+        <div></div>
+        <div class="manage">
+          <button value="backward" class="backward">&#x276E;&#x276E;</button>
+          <button class="skip" value="skip">Skip</button>
+          <button value="forward" class="forward">&#x276F;&#x276F;</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
