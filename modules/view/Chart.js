@@ -267,76 +267,76 @@ export class Chart {
   }
 
   setCalculations(renderedData) {
-    this.renderedLevels = []
-    for (const level of this.levels) {
-      if (level.tests.length > 1) {
-        const overlap = getRangeOverlap([level.tests.at(0), level.tests.at(-1)], [renderedData.at(0).x, renderedData.at(-1).x])
-        if (overlap.isOverlapping) {
-          this.renderedLevels.push({ price: level.price, timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, testsCount: level.tests.length })
-        }
-      }
-    }
+    // this.renderedLevels = []
+    // for (const level of this.levels) {
+    //   if (level.tests.length > 1) {
+    //     const overlap = getRangeOverlap([level.tests.at(0), level.tests.at(-1)], [renderedData.at(0).x, renderedData.at(-1).x])
+    //     if (overlap.isOverlapping) {
+    //       this.renderedLevels.push({ price: level.price, timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, testsCount: level.tests.length })
+    //     }
+    //   }
+    // }
 
-    this.renderedBidask = []
-    for (let i = 0; i < this.bidAsk.length; i++) {
-      const bidAsk = this.bidAsk[i]
-      const nextBidAsk = this.bidAsk[i + 1]
-      const overlap = getRangeOverlap([bidAsk.time, nextBidAsk?.time || Date.now()], [renderedData.at(0).x, renderedData.at(-1).x])
-      if (overlap.isOverlapping) {
-        this.renderedBidask.push({ timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, isBullish: bidAsk.isBullish })
-      }
-    }
+    // this.renderedBidask = []
+    // for (let i = 0; i < this.bidAsk.length; i++) {
+    //   const bidAsk = this.bidAsk[i]
+    //   const nextBidAsk = this.bidAsk[i + 1]
+    //   const overlap = getRangeOverlap([bidAsk.time, nextBidAsk?.time || Date.now()], [renderedData.at(0).x, renderedData.at(-1).x])
+    //   if (overlap.isOverlapping) {
+    //     this.renderedBidask.push({ timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, isBullish: bidAsk.isBullish })
+    //   }
+    // }
 
-    this.renderedStreaks = []
-    for (const streak of this.streaks) {
-      for (const deal of streak.deals) {
-        const overlap = getRangeOverlap([deal.from, deal.to], [renderedData.at(0).x, renderedData.at(-1).x])
-        if (overlap.isOverlapping) {
-          this.renderedStreaks.push({ timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, isBullish: streak.type === 'win', stopLoss: deal.stopLoss, takeProfit: deal.takeProfit, enter: deal.enter })
-        }
-      }
-    }
+    // this.renderedStreaks = []
+    // for (const streak of this.streaks) {
+    //   for (const deal of streak.deals) {
+    //     const overlap = getRangeOverlap([deal.from, deal.to], [renderedData.at(0).x, renderedData.at(-1).x])
+    //     if (overlap.isOverlapping) {
+    //       this.renderedStreaks.push({ timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, isBullish: streak.type === 'win', stopLoss: deal.stopLoss, takeProfit: deal.takeProfit, enter: deal.enter })
+    //     }
+    //   }
+    // }
 
-    this.renderedVolumeProfiles = []
-    for (const volumeProfile of this.volumeProfiles) {
-      const overlap = getRangeOverlap([volumeProfile.startedAt, volumeProfile.endedAt], [renderedData.at(0).x, renderedData.at(-1).x])
-      if (overlap.isOverlapping) {
-        this.renderedVolumeProfiles.push({ timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, profile: volumeProfile.profile, vah: volumeProfile.vah, val: volumeProfile.val, vpoc: volumeProfile.vpoc, vpocVolume: volumeProfile.profile[volumeProfile.vpocIndex].volume, normality: volumeProfile.normality })
-      }
-    }
+    // this.renderedVolumeProfiles = []
+    // for (const volumeProfile of this.volumeProfiles) {
+    //   const overlap = getRangeOverlap([volumeProfile.startedAt, volumeProfile.endedAt], [renderedData.at(0).x, renderedData.at(-1).x])
+    //   if (overlap.isOverlapping) {
+    //     this.renderedVolumeProfiles.push({ timeStart: overlap.firstPoint, timeEnd: overlap.lastPoint, profile: volumeProfile.profile, vah: volumeProfile.vah, val: volumeProfile.val, vpoc: volumeProfile.vpoc, vpocVolume: volumeProfile.profile[volumeProfile.vpocIndex].volume, normality: volumeProfile.normality })
+    //   }
+    // }
 
-    this.renderedPriceActions = []
-    if (!this.priceActions) return
-    for (let i = 0; i < this.priceActions.priceEvents.length; i++) {
-      const priceEvent = this.priceActions.priceEvents[i]
-      const priceEventTimestamp = this.priceActions.priceEventsTimestamps[i]
-      const priceEventPrice = this.priceActions.priceEventsPrices[i]
-      const overlap = getRangeOverlap([priceEventTimestamp, priceEventTimestamp + 1], [renderedData.at(0).x, renderedData.at(-1).x])
-      if (overlap.isOverlapping) {
-        this.renderedPriceActions.push({ time: overlap.firstPoint, event: priceEvent, price: priceEventPrice })
-      }
-    }
+    // this.renderedPriceActions = []
+    // if (!this.priceActions) return
+    // for (let i = 0; i < this.priceActions.priceEvents.length; i++) {
+    //   const priceEvent = this.priceActions.priceEvents[i]
+    //   const priceEventTimestamp = this.priceActions.priceEventsTimestamps[i]
+    //   const priceEventPrice = this.priceActions.priceEventsPrices[i]
+    //   const overlap = getRangeOverlap([priceEventTimestamp, priceEventTimestamp + 1], [renderedData.at(0).x, renderedData.at(-1).x])
+    //   if (overlap.isOverlapping) {
+    //     this.renderedPriceActions.push({ time: overlap.firstPoint, event: priceEvent, price: priceEventPrice })
+    //   }
+    // }
 
 
-    this.renderedSma = this.sma.slice(this.dataSlice.from, this.dataSlice.length)
-    this.renderedStdDev = this.stdDev.slice(this.dataSlice.from, this.dataSlice.length)
-    this.renderedHighs = []
-    for (let i = 0; i < this.highs.length; i++) {
-      const high = this.highs[i]
-      const overlap = getRangeOverlap([high.time, high.time + 1], [renderedData.at(0).x, renderedData.at(-1).x])
-      if (overlap.isOverlapping) {
-        this.renderedHighs.push(high)
-      }
-    }
+    // this.renderedSma = this.sma.slice(this.dataSlice.from, this.dataSlice.length)
+    // this.renderedStdDev = this.stdDev.slice(this.dataSlice.from, this.dataSlice.length)
+    // this.renderedHighs = []
+    // for (let i = 0; i < this.highs.length; i++) {
+    //   const high = this.highs[i]
+    //   const overlap = getRangeOverlap([high.time, high.time + 1], [renderedData.at(0).x, renderedData.at(-1).x])
+    //   if (overlap.isOverlapping) {
+    //     this.renderedHighs.push(high)
+    //   }
+    // }
     
-    this.renderedLows = []
-    for (let i = 0; i < this.lows.length; i++) {
-      const low = this.lows[i]
-      const overlap = getRangeOverlap([low.time, low.time + 1], [renderedData.at(0).x, renderedData.at(-1).x])
-      if (overlap.isOverlapping) {
-        this.renderedLows.push(low)
-      }
-    }
+    // this.renderedLows = []
+    // for (let i = 0; i < this.lows.length; i++) {
+    //   const low = this.lows[i]
+    //   const overlap = getRangeOverlap([low.time, low.time + 1], [renderedData.at(0).x, renderedData.at(-1).x])
+    //   if (overlap.isOverlapping) {
+    //     this.renderedLows.push(low)
+    //   }
+    // }
 
     this.significantPoints = zigzag(renderedData, 0.03)
     
@@ -511,6 +511,7 @@ export class Chart {
     this.dataSlice = { from: Math.max(data.length - viewportSize - this.startingCandleShift, 0), length: Math.min(data.length, Math.max(data.length - this.startingCandleShift, viewportSize)) }
     const renderedData = data.slice(this.dataSlice.from, this.dataSlice.length).map(serverCandleToXOHLC)
     this.renderedData = renderedData
+
     while (this.delayedRenderCalls.length > 0) this.delayedRenderCalls.shift().call(this, renderedData)
 
     if (this.viewType === 'ohlc') {
